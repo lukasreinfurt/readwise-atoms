@@ -1,0 +1,7 @@
+{
+  "readwiseToken": "savedReadwiseToken",
+  "bookIndexFilenameTemplate": "savedBookIndexFilenameTemplate",
+  "bookIndexFileTemplate": "savedBookIndexFileTemplate",
+  "highlightFilenameTemplate": "savedHighlightFilenameTemplate",
+  "highlightFileTemplate": "savedHighlightFileTemplate"
+}
