@@ -1,5 +1,9 @@
 import { App, DataAdapter, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import * as Handlebars from 'handlebars';
+import highlightFileTemplate from './templates/highlight.file.template.md?raw';
+import highlightPathTemplate from './templates/highlight.path.template.md?raw';
+import indexFileTemplate from './templates/index.file.template.md?raw';
+import indexPathTemplate from './templates/index.path.template.md?raw';
 
 export interface ReadwiseAtomsSettings {
   readwiseToken: string;
@@ -9,33 +13,12 @@ export interface ReadwiseAtomsSettings {
   highlightFileTemplate: string;
 }
 
-const bookIndexFilenameTemplateDefault = 'Readwise Atoms/{{author}} - {{title}}/index.md';
-const bookIndexFileTemplateDefault =
-  '---\n' +
-  'title: {{ title }}\n' +
-  'author: {{ author }}\n' +
-  '---\n' +
-  '\n' +
-  '## Quotes\n' +
-  '\n' +
-  '{{#each highlights }}\n' +
-  '![[{{ id }}]]\n' +
-  '{{/each}}\n';
-const highlightFilenameTemplateDefault = 'Readwise Atoms/{{book.author}} - {{book.title}}/quotes/{{highlight.id}}.md';
-const highlightFileTemplateDefault =
-  '---\n' +
-  'id: {{ highlight.id }}\n' +
-  'source: "[[{{book.title}}/index]]"\n' +
-  '---\n' +
-  '\n' +
-  '{{ highlight.text }}\n';
-
 const DEFAULT_SETTINGS: ReadwiseAtomsSettings = {
   readwiseToken: '',
-  bookIndexFilenameTemplate: bookIndexFilenameTemplateDefault,
-  bookIndexFileTemplate: bookIndexFileTemplateDefault,
-  highlightFilenameTemplate: highlightFilenameTemplateDefault,
-  highlightFileTemplate: highlightFileTemplateDefault,
+  bookIndexFilenameTemplate: indexPathTemplate.trim(),
+  bookIndexFileTemplate: indexFileTemplate,
+  highlightFilenameTemplate: highlightPathTemplate.trim(),
+  highlightFileTemplate: highlightFileTemplate,
 };
 
 export default class ReadwiseAtoms extends Plugin {
@@ -191,7 +174,7 @@ class SampleSettingTab extends PluginSettingTab {
       .setDesc(this.bookIndexFilenameTemplateDescription())
       .addText((text) =>
         text
-          .setPlaceholder('Example: ' + bookIndexFilenameTemplateDefault)
+          .setPlaceholder('Example: ' + indexPathTemplate.trim())
           .setValue(this.plugin.settings.bookIndexFilenameTemplate)
           .onChange(async (value) => {
             this.plugin.settings.bookIndexFilenameTemplate = value;
@@ -204,7 +187,7 @@ class SampleSettingTab extends PluginSettingTab {
       .setDesc(this.bookIndexFileTemplateDescription())
       .addTextArea((text) => {
         text
-          .setPlaceholder('Example:\n\n' + bookIndexFileTemplateDefault)
+          .setPlaceholder('Example:\n\n' + indexFileTemplate)
           .setValue(this.plugin.settings.bookIndexFileTemplate)
           .onChange(async (value) => {
             this.plugin.settings.bookIndexFileTemplate = value;
@@ -219,7 +202,7 @@ class SampleSettingTab extends PluginSettingTab {
       .setDesc(this.highlightFilenameTemplateDescription())
       .addText((text) =>
         text
-          .setPlaceholder('Example: ' + highlightFilenameTemplateDefault)
+          .setPlaceholder('Example: ' + highlightPathTemplate.trim())
           .setValue(this.plugin.settings.highlightFilenameTemplate)
           .onChange(async (value) => {
             this.plugin.settings.highlightFilenameTemplate = value;
@@ -232,7 +215,7 @@ class SampleSettingTab extends PluginSettingTab {
       .setDesc(this.highlightFileTemplateDescription())
       .addTextArea((text) => {
         text
-          .setPlaceholder('Example:\n\n' + highlightFileTemplateDefault)
+          .setPlaceholder('Example:\n\n' + highlightFileTemplate)
           .setValue(this.plugin.settings.highlightFileTemplate)
           .onChange(async (value) => {
             this.plugin.settings.highlightFileTemplate = value;
