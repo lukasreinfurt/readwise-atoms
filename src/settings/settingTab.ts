@@ -32,27 +32,27 @@ export default class SettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Book Index Filename Template')
-      .setDesc(this.bookIndexFilenameTemplateDescription())
+      .setName('Book Index Path Template')
+      .setDesc(this.indexPathTemplateDescription())
       .addText((text) =>
         text
           .setPlaceholder('Example: ' + indexPathTemplate.trim())
-          .setValue(this.plugin.settings.bookIndexFilenameTemplate)
+          .setValue(this.plugin.settings.indexPathTemplate)
           .onChange(async (value) => {
-            this.plugin.settings.bookIndexFilenameTemplate = value;
+            this.plugin.settings.indexPathTemplate = value;
             await this.plugin.saveSettings();
           })
       );
 
     new Setting(containerEl)
       .setName('Book Index File Template')
-      .setDesc(this.bookIndexFileTemplateDescription())
+      .setDesc(this.indexFileTemplateDescription())
       .addTextArea((text) => {
         text
           .setPlaceholder('Example:\n\n' + indexFileTemplate)
-          .setValue(this.plugin.settings.bookIndexFileTemplate)
+          .setValue(this.plugin.settings.indexFileTemplate)
           .onChange(async (value) => {
-            this.plugin.settings.bookIndexFileTemplate = value;
+            this.plugin.settings.indexFileTemplate = value;
             await this.plugin.saveSettings();
           });
         text.inputEl.rows = 10;
@@ -60,14 +60,14 @@ export default class SettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Highlight Filename Template')
-      .setDesc(this.highlightFilenameTemplateDescription())
+      .setName('Highlight Path Template')
+      .setDesc(this.highlightPathTemplateDescription())
       .addText((text) =>
         text
           .setPlaceholder('Example: ' + highlightPathTemplate.trim())
-          .setValue(this.plugin.settings.highlightFilenameTemplate)
+          .setValue(this.plugin.settings.highlightPathTemplate)
           .onChange(async (value) => {
-            this.plugin.settings.highlightFilenameTemplate = value;
+            this.plugin.settings.highlightPathTemplate = value;
             await this.plugin.saveSettings();
           })
       );
@@ -88,7 +88,7 @@ export default class SettingTab extends PluginSettingTab {
       });
   }
 
-  private bookIndexFilenameTemplateDescription(): DocumentFragment {
+  private indexPathTemplateDescription(): DocumentFragment {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
       'A book index file can be created for each book that is imported from Readwise. ' +
@@ -116,7 +116,7 @@ export default class SettingTab extends PluginSettingTab {
     return fragment;
   }
 
-  private bookIndexFileTemplateDescription(): DocumentFragment {
+  private indexFileTemplateDescription(): DocumentFragment {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
       'This template controls the content of the book index files. ' +
@@ -139,7 +139,7 @@ export default class SettingTab extends PluginSettingTab {
     return fragment;
   }
 
-  private highlightFilenameTemplateDescription(): DocumentFragment {
+  private highlightPathTemplateDescription(): DocumentFragment {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
       'A highlight file is created for each highlight that is imported from Readwise. ' +

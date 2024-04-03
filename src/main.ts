@@ -94,34 +94,31 @@ export default class ReadwiseAtoms extends Plugin {
   async syncHighlights(books: any) {
     this.fs = this.app.vault.adapter;
 
-    const highlightPathTemplate = this.settings.highlightFilenameTemplate;
+    const highlightPathTemplate = this.settings.highlightPathTemplate;
     const highlightFileTemplate = this.settings.highlightFileTemplate;
-    const indexPathTemplate = this.settings.bookIndexFilenameTemplate;
-    const indexFileTemplate = this.settings.bookIndexFileTemplate;
+    const indexPathTemplate = this.settings.indexPathTemplate;
+    const indexFileTemplate = this.settings.indexFileTemplate;
 
     for await (const book of books) {
-      const resolvedBookIndexFilename = this.templates.resolve({ indexPathTemplate }, book);
-      const resolvedBookIndexPath = resolvedBookIndexFilename.substring(0, resolvedBookIndexFilename.lastIndexOf('/'));
+      const resolvedindexPath = this.templates.resolve({ indexPathTemplate }, book);
+      const resolvedBookIndexPath = resolvedindexPath.substring(0, resolvedindexPath.lastIndexOf('/'));
 
       for await (const highlight of book.highlights) {
         const data = { book: book, highlight: highlight };
-        const resolvedHighlightFilename = this.templates.resolve({ highlightPathTemplate }, data);
-        const resolvedHighlightPath = resolvedHighlightFilename.substring(
-          0,
-          resolvedHighlightFilename.lastIndexOf('/')
-        );
-        if (!(await this.fs.exists(resolvedHighlightFilename))) {
+        const resolvedhighlightPath = this.templates.resolve({ highlightPathTemplate }, data);
+        const resolvedHighlightPath = resolvedhighlightPath.substring(0, resolvedhighlightPath.lastIndexOf('/'));
+        if (!(await this.fs.exists(resolvedhighlightPath))) {
           const resolvedHighlightFile = this.templates.resolve({ highlightFileTemplate }, data);
           await this.fs.mkdir(resolvedHighlightPath);
-          await this.fs.write(resolvedHighlightFilename, resolvedHighlightFile);
+          await this.fs.write(resolvedhighlightPath, resolvedHighlightFile);
         }
       }
 
       if (resolvedBookIndexPath !== '') {
-        if (!(await this.fs.exists(resolvedBookIndexFilename))) {
-          const resolvedBookIndexFile = this.templates.resolve({ indexFileTemplate }, book);
+        if (!(await this.fs.exists(resolvedindexPath))) {
+          const resolvedindexFile = this.templates.resolve({ indexFileTemplate }, book);
           await this.fs.mkdir(resolvedBookIndexPath);
-          await this.fs.write(resolvedBookIndexFilename, resolvedBookIndexFile);
+          await this.fs.write(resolvedindexPath, resolvedindexFile);
         }
       }
     }

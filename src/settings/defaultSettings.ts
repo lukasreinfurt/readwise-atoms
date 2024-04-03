@@ -6,9 +6,9 @@ import indexPathTemplate from '../templates/index.path.template.md?raw';
 
 const DEFAULT_SETTINGS: Settings = {
   readwiseToken: '',
-  bookIndexFilenameTemplate: indexPathTemplate.trim(),
-  bookIndexFileTemplate: indexFileTemplate,
-  highlightFilenameTemplate: highlightPathTemplate.trim(),
+  indexPathTemplate: indexPathTemplate.trim(),
+  indexFileTemplate: indexFileTemplate,
+  highlightPathTemplate: highlightPathTemplate.trim(),
   highlightFileTemplate: highlightFileTemplate,
 };
 

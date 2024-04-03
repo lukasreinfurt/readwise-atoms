@@ -1,7 +1,7 @@
 export default interface Settings {
   readwiseToken: string;
-  bookIndexFilenameTemplate: string;
-  bookIndexFileTemplate: string;
-  highlightFilenameTemplate: string;
+  indexPathTemplate: string;
+  indexFileTemplate: string;
+  highlightPathTemplate: string;
   highlightFileTemplate: string;
 }

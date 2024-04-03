@@ -1,7 +1,7 @@
 {
   "readwiseToken": "savedReadwiseToken",
-  "bookIndexFilenameTemplate": "savedBookIndexFilenameTemplate",
-  "bookIndexFileTemplate": "savedBookIndexFileTemplate",
-  "highlightFilenameTemplate": "savedHighlightFilenameTemplate",
+  "indexPathTemplate": "savedIndexPathTemplate",
+  "indexFileTemplate": "savedIndexFileTemplate",
+  "highlightPathTemplate": "savedHighlightPathTemplate",
   "highlightFileTemplate": "savedHighlightFileTemplate"
 }

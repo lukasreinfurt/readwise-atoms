@@ -3,8 +3,8 @@ import { App, PluginManifest } from 'obsidian';
 import ReadwiseAtoms from '../src/main';
 import * as exportJson from './__mocks__/export.json';
 import * as dataJson from './__mocks__/data.json';
-import bookIndexFileTemplateDefault from './__mocks__/bookIndexFileTemplateDefault.md?raw';
-import highlightFileTemplateDefault from './__mocks__/highlightFileTemplateDefault.md?raw';
+import indexFileTemplateDefault from '../src/templates/index.file.template.md?raw';
+import highlightFileTemplateDefault from '../src/templates/highlight.file.template.md?raw';
 import Templates from 'src/templates/templates';
 
 vi.mock('obsidian');
@@ -52,15 +52,14 @@ describe('Readwise Atoms', () => {
 
   describe('Settings', () => {
     it('should have correct default values', () => {
-      const bookIndexFilenameTemplateDefault = 'Readwise Atoms/{{author}} - {{title}}/index.md';
-      const highlightFilenameTemplateDefault =
-        'Readwise Atoms/{{book.author}} - {{book.title}}/quotes/{{highlight.id}}.md';
+      const indexPathTemplateDefault = 'Readwise Atoms/{{author}} - {{title}}/index.md';
+      const highlightPathTemplateDefault = 'Readwise Atoms/{{book.author}} - {{book.title}}/quotes/{{highlight.id}}.md';
 
       expect(loadDataSpy).toHaveBeenCalledOnce();
       expect(plugin.settings.readwiseToken).toEqual('');
-      expect(plugin.settings.bookIndexFilenameTemplate).toEqual(bookIndexFilenameTemplateDefault);
-      expect(plugin.settings.bookIndexFileTemplate).toEqual(bookIndexFileTemplateDefault);
-      expect(plugin.settings.highlightFilenameTemplate).toEqual(highlightFilenameTemplateDefault);
+      expect(plugin.settings.indexPathTemplate).toEqual(indexPathTemplateDefault);
+      expect(plugin.settings.indexFileTemplate).toEqual(indexFileTemplateDefault);
+      expect(plugin.settings.highlightPathTemplate).toEqual(highlightPathTemplateDefault);
       expect(plugin.settings.highlightFileTemplate).toEqual(highlightFileTemplateDefault);
     });
 
@@ -75,9 +74,9 @@ describe('Readwise Atoms', () => {
 
       expect(loadDataSpy).toHaveBeenCalledTimes(2);
       expect(plugin.settings.readwiseToken).toEqual('savedReadwiseToken');
-      expect(plugin.settings.bookIndexFilenameTemplate).toEqual('savedBookIndexFilenameTemplate');
-      expect(plugin.settings.bookIndexFileTemplate).toEqual('savedBookIndexFileTemplate');
-      expect(plugin.settings.highlightFilenameTemplate).toEqual('savedHighlightFilenameTemplate');
+      expect(plugin.settings.indexPathTemplate).toEqual('savedIndexPathTemplate');
+      expect(plugin.settings.indexFileTemplate).toEqual('savedIndexFileTemplate');
+      expect(plugin.settings.highlightPathTemplate).toEqual('savedHighlightPathTemplate');
       expect(plugin.settings.highlightFileTemplate).toEqual('savedHighlightFileTemplate');
     });
   });
@@ -139,7 +138,7 @@ describe('Readwise Atoms', () => {
 
     it('should not create index file if template is empty', async () => {
       existsSpy.mockResolvedValue(false);
-      plugin.settings.bookIndexFilenameTemplate = '';
+      plugin.settings.indexPathTemplate = '';
       plugin.templates = new Templates();
 
       await plugin.syncHighlights(exportJson.results);
