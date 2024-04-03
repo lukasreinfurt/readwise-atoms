@@ -1,11 +1,12 @@
 import { DataAdapter, Plugin } from 'obsidian';
-import * as Handlebars from 'handlebars';
 import Settings from './settings/settings';
 import DEFAULT_SETTINGS from './settings/defaultSettings';
 import SettingTab from './settings/settingTab';
+import Templates from './templates/templates';
 
 export default class ReadwiseAtoms extends Plugin {
   settings: Settings;
+  templates = new Templates();
   fs: DataAdapter;
 
   async onload() {
@@ -92,24 +93,25 @@ export default class ReadwiseAtoms extends Plugin {
 
   async syncHighlights(books: any) {
     this.fs = this.app.vault.adapter;
-    const highlightFilenameTemplate = Handlebars.compile(this.settings.highlightFilenameTemplate);
-    const highlightFileTemplate = Handlebars.compile(this.settings.highlightFileTemplate);
-    const bookIndexFilenameTemplate = Handlebars.compile(this.settings.bookIndexFilenameTemplate);
-    const bookIndexFileTemplate = Handlebars.compile(this.settings.bookIndexFileTemplate);
+
+    const highlightPathTemplate = this.settings.highlightFilenameTemplate;
+    const highlightFileTemplate = this.settings.highlightFileTemplate;
+    const indexPathTemplate = this.settings.bookIndexFilenameTemplate;
+    const indexFileTemplate = this.settings.bookIndexFileTemplate;
 
     for await (const book of books) {
-      const resolvedBookIndexFilename = bookIndexFilenameTemplate(book);
+      const resolvedBookIndexFilename = this.templates.resolve({ indexPathTemplate }, book);
       const resolvedBookIndexPath = resolvedBookIndexFilename.substring(0, resolvedBookIndexFilename.lastIndexOf('/'));
 
       for await (const highlight of book.highlights) {
         const data = { book: book, highlight: highlight };
-        const resolvedHighlightFilename = highlightFilenameTemplate(data);
+        const resolvedHighlightFilename = this.templates.resolve({ highlightPathTemplate }, data);
         const resolvedHighlightPath = resolvedHighlightFilename.substring(
           0,
           resolvedHighlightFilename.lastIndexOf('/')
         );
         if (!(await this.fs.exists(resolvedHighlightFilename))) {
-          const resolvedHighlightFile = highlightFileTemplate(data);
+          const resolvedHighlightFile = this.templates.resolve({ highlightFileTemplate }, data);
           await this.fs.mkdir(resolvedHighlightPath);
           await this.fs.write(resolvedHighlightFilename, resolvedHighlightFile);
         }
@@ -117,7 +119,7 @@ export default class ReadwiseAtoms extends Plugin {
 
       if (resolvedBookIndexPath !== '') {
         if (!(await this.fs.exists(resolvedBookIndexFilename))) {
-          const resolvedBookIndexFile = bookIndexFileTemplate(book);
+          const resolvedBookIndexFile = this.templates.resolve({ indexFileTemplate }, book);
           await this.fs.mkdir(resolvedBookIndexPath);
           await this.fs.write(resolvedBookIndexFilename, resolvedBookIndexFile);
         }

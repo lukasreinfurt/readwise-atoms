@@ -5,6 +5,7 @@ import * as exportJson from './__mocks__/export.json';
 import * as dataJson from './__mocks__/data.json';
 import bookIndexFileTemplateDefault from './__mocks__/bookIndexFileTemplateDefault.md?raw';
 import highlightFileTemplateDefault from './__mocks__/highlightFileTemplateDefault.md?raw';
+import Templates from 'src/templates/templates';
 
 vi.mock('obsidian');
 global.fetch = vi.fn();
@@ -110,6 +111,7 @@ describe('Readwise Atoms', () => {
   describe('Synchronization', () => {
     it('should create folders if they do not exists', async () => {
       existsSpy.mockResolvedValueOnce(false).mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+      plugin.templates = new Templates();
 
       await plugin.syncHighlights(exportJson.results);
 
@@ -138,6 +140,7 @@ describe('Readwise Atoms', () => {
     it('should not create index file if template is empty', async () => {
       existsSpy.mockResolvedValue(false);
       plugin.settings.bookIndexFilenameTemplate = '';
+      plugin.templates = new Templates();
 
       await plugin.syncHighlights(exportJson.results);
 
