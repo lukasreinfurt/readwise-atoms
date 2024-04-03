@@ -32,7 +32,7 @@ export default class SettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Book Index Path Template')
+      .setName('Index Path Template')
       .setDesc(this.indexPathTemplateDescription())
       .addText((text) =>
         text
@@ -45,7 +45,7 @@ export default class SettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Book Index File Template')
+      .setName('Index File Template')
       .setDesc(this.indexFileTemplateDescription())
       .addTextArea((text) => {
         text
@@ -91,7 +91,7 @@ export default class SettingTab extends PluginSettingTab {
   private indexPathTemplateDescription(): DocumentFragment {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
-      'A book index file can be created for each book that is imported from Readwise. ' +
+      'An index file can be created for each book that is imported from Readwise. ' +
         'This template controls where these files will be created and how they will be called.'
     );
 
@@ -119,7 +119,7 @@ export default class SettingTab extends PluginSettingTab {
   private indexFileTemplateDescription(): DocumentFragment {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
-      'This template controls the content of the book index files. ' +
+      'This template controls the content of the index files. ' +
         'It can be used to link to all highlights from the book or list any other book metadata that you might want to see here.'
     );
 
