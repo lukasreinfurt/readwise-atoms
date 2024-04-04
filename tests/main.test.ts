@@ -6,6 +6,7 @@ import * as dataJson from './__mocks__/data.json';
 import indexFileTemplateDefault from '../src/templates/index.file.template.md?raw';
 import highlightFileTemplateDefault from '../src/templates/highlight.file.template.md?raw';
 import Templates from 'src/templates/templates';
+import Readwise from 'src/readwise/readwise';
 
 vi.mock('obsidian');
 global.fetch = vi.fn();
@@ -90,8 +91,9 @@ describe('Readwise Atoms', () => {
       fetchSpy.mockResolvedValueOnce({
         json: () => exportJson,
       });
+      const readwise = new Readwise(plugin.settings.readwiseToken);
 
-      await plugin.getHighlights(plugin.settings.readwiseToken);
+      await readwise.getHighlights();
 
       expect(fetchSpy).toHaveBeenCalledOnce();
     });
