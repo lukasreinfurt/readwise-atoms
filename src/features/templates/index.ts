@@ -1,7 +1,9 @@
 import * as Handlebars from 'handlebars';
 
-export default class Templates {
+export class Templates {
   templates = {} as any;
+
+  constructor() {}
 
   public resolve(template: Object, data: any): string {
     const key = Object.keys(template)[0];

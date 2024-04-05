@@ -3,10 +3,11 @@ import { App, PluginManifest } from 'obsidian';
 import ReadwiseAtoms from '../src/main';
 import * as exportJson from './__mocks__/export.json';
 import * as dataJson from './__mocks__/data.json';
-import indexFileTemplateDefault from '../src/templates/index.file.template.md?raw';
-import highlightFileTemplateDefault from '../src/templates/highlight.file.template.md?raw';
-import Templates from 'src/templates/templates';
-import Readwise from 'src/readwise/readwise';
+import indexFileTemplateDefault from '../src/features/templates/index.file.template.md?raw';
+import highlightFileTemplateDefault from '../src/features/templates/highlight.file.template.md?raw';
+import { Templates } from 'src/features/templates';
+import Readwise from 'src/features/readwise';
+import Synchronize from 'src/features/synchronize';
 
 vi.mock('obsidian');
 global.fetch = vi.fn();
@@ -113,8 +114,9 @@ describe('Readwise Atoms', () => {
     it('should create folders if they do not exists', async () => {
       existsSpy.mockResolvedValueOnce(false).mockResolvedValueOnce(true).mockResolvedValueOnce(false);
       plugin.templates = new Templates();
+      const synchronize = new Synchronize(plugin.app, plugin.settings, plugin.templates);
 
-      await plugin.syncHighlights(exportJson.results);
+      await synchronize.syncHighlights(exportJson.results);
 
       expect(existsSpy).toHaveBeenCalledTimes(3);
       expect(existsSpy).toHaveBeenNthCalledWith(1, 'Readwise Atoms/Book Author - Book Title/quotes/456.md');
@@ -126,9 +128,10 @@ describe('Readwise Atoms', () => {
     });
 
     it('should write new files', async () => {
-      existsSpy.mockResolvedValue(false);
+      plugin.templates = new Templates();
+      const synchronize = new Synchronize(plugin.app, plugin.settings, plugin.templates);
 
-      await plugin.syncHighlights(exportJson.results);
+      await synchronize.syncHighlights(exportJson.results);
 
       expect(writeSpy).toHaveBeenCalledTimes(3);
       expect(writeSpy.mock.calls[0][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 1.md`);
@@ -142,8 +145,9 @@ describe('Readwise Atoms', () => {
       existsSpy.mockResolvedValue(false);
       plugin.settings.indexPathTemplate = '';
       plugin.templates = new Templates();
+      const synchronize = new Synchronize(plugin.app, plugin.settings, plugin.templates);
 
-      await plugin.syncHighlights(exportJson.results);
+      await synchronize.syncHighlights(exportJson.results);
 
       expect(writeSpy).toHaveBeenCalledTimes(2);
     });
