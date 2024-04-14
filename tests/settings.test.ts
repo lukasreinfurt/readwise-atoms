@@ -5,9 +5,6 @@ import * as dataJson from './__mocks__/data.json';
 import indexFileTemplateDefault from '../src/features/templates/index.file.template.md?raw';
 import highlightFileTemplateDefault from '../src/features/templates/highlight.file.template.md?raw';
 
-vi.mock('obsidian');
-global.fetch = vi.fn();
-
 describe('Settings', () => {
   let plugin: ReadwiseAtoms;
   let loadDataSpy: MockInstance;
