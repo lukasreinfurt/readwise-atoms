@@ -1,6 +1,1 @@
----
-id: 456
-source: "[[Book Title/index]]"
----
-
-Highlight 1 text.
+highlight 1 file content
