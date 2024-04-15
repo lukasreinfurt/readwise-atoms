@@ -39,6 +39,7 @@ describe('Readwise Atoms', () => {
     templates = {
       templates: [],
       resolve: vi.fn(),
+      compile: vi.fn(),
     };
   });
 
