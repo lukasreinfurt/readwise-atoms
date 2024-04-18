@@ -13,18 +13,15 @@ export default class Readwise {
     this.token = token;
   }
 
-  public async isTokenValid() {
-    const response = await this.request('auth/');
-    return response.status === 204;
+  public async validateToken() {
+    await this.request('auth/');
   }
 
   public async getHighlights() {
     let fullData = [];
     let nextPageCursor = null;
 
-    if (!(await this.isTokenValid())) {
-      throw new InvalidTokenError('The supplied Readwise token seems to be invalid');
-    }
+    await this.validateToken();
 
     while (true) {
       const queryParams = new URLSearchParams();
@@ -69,6 +66,7 @@ export default class Readwise {
     if (response.ok) {
       return response;
     } else {
+      if (response.status === 401) throw new InvalidTokenError('The supplied Readwise token seems to be invalid');
       const message = `There was an error with the following request: ${URL}\n${response.status}: ${response.statusText}`;
       switch (response.status.toString().substring(0, 1)) {
         case '4':

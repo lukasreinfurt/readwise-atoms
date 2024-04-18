@@ -51,7 +51,7 @@ describe('Readwise', () => {
   it('should throw error on invalid token', async () => {
     fetchSpy.mockReset();
     fetchSpy.mockResolvedValue({
-      ok: true,
+      ok: false,
       status: 401,
       statusText: 'status text',
     });
