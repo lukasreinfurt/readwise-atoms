@@ -1,11 +1,12 @@
 import { Notice } from 'obsidian';
 
 export default class Notifications {
+  Notice = Notice;
   prefix = 'Readwise Atoms: ';
 
   constructor() {}
 
   public notice(message: string) {
-    new Notice(this.prefix + message);
+    new this.Notice(this.prefix + message);
   }
 }

@@ -1,19 +1,26 @@
 import { MockInstance, afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import Notifications from 'src/features/notifications';
 
-describe('Readwise Atoms', () => {
+describe('Notifications', () => {
   let notifications: Notifications;
+  let noticeSpy: MockInstance;
 
   beforeEach(async () => {
     vi.restoreAllMocks();
     notifications = new Notifications();
+    noticeSpy = vi.spyOn(notifications, 'Notice');
   });
 
   afterAll(() => {
     vi.resetAllMocks();
   });
 
-  describe('Bugs', () => {
-    it.todo('should add tests for bugs here');
+  it('should add prefix to message', () => {
+    notifications.prefix = 'prefix';
+
+    notifications.notice('message');
+
+    expect(noticeSpy).toHaveBeenCalledOnce();
+    expect(noticeSpy).toHaveBeenCalledWith('prefixmessage');
   });
 });
