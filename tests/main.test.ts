@@ -16,7 +16,5 @@ describe('Readwise Atoms', () => {
     vi.resetAllMocks();
   });
 
-  describe('Bugs', () => {
-    it.todo('should add tests for bugs here');
-  });
+  it.todo('add tests');
 });

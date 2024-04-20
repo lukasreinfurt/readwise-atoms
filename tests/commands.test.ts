@@ -7,7 +7,7 @@ import ServerError from 'src/features/readwise/ServerError';
 import NetworkError from 'src/features/readwise/NetworkError';
 import UnidentifiedError from 'src/features/readwise/UnidentifiedError';
 
-describe('Readwise Atoms', () => {
+describe('Commands', () => {
   const plugin = {
     readwise: {
       getHighlights: vi.fn(),
@@ -91,9 +91,5 @@ describe('Readwise Atoms', () => {
       expect(noticeSpy).toHaveBeenCalledOnce();
       expect(noticeSpy).toHaveBeenCalledWith('synchronization error: unidentified error');
     });
-  });
-
-  describe('Bugs', () => {
-    it.todo('should add tests for bugs here');
   });
 });

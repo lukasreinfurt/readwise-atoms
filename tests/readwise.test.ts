@@ -76,8 +76,4 @@ describe('Readwise', () => {
   it.todo('should handle API rate limits');
 
   it.todo('should load incremental exports');
-
-  describe('Bugs', () => {
-    it.todo('should add tests for bugs here');
-  });
 });

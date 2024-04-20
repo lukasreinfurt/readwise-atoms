@@ -52,8 +52,4 @@ describe('Settings', () => {
     expect(plugin.settings.highlightPathTemplate).toEqual('savedHighlightPathTemplate');
     expect(plugin.settings.highlightFileTemplate).toEqual('savedHighlightFileTemplate');
   });
-
-  describe('Bugs', () => {
-    it.todo('should add tests for bugs here');
-  });
 });
