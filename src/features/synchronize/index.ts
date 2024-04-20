@@ -28,18 +28,18 @@ export default class Synchronize {
         const highlightFilePath = this.templates.resolve({ highlightPathTemplate }, data);
         const highlightFolderPath = highlightFilePath.substring(0, highlightFilePath.lastIndexOf('/'));
         if (!(await this.fs.exists(highlightFilePath))) {
-          const highlightFileContent = this.templates.resolve({ highlightFileTemplate }, data);
           await this.fs.mkdir(highlightFolderPath);
-          await this.fs.write(highlightFilePath, highlightFileContent);
         }
+        const highlightFileContent = this.templates.resolve({ highlightFileTemplate }, data);
+        await this.fs.write(highlightFilePath, highlightFileContent);
       }
 
       if (indexFolderPath !== '') {
         if (!(await this.fs.exists(indexFilePath))) {
-          const indexFileConten = this.templates.resolve({ indexFileTemplate }, book);
           await this.fs.mkdir(indexFolderPath);
-          await this.fs.write(indexFilePath, indexFileConten);
         }
+        const indexFileContent = this.templates.resolve({ indexFileTemplate }, book);
+        await this.fs.write(indexFilePath, indexFileContent);
       }
     }
   }

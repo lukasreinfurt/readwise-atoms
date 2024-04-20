@@ -72,7 +72,7 @@ describe('Synchronize', () => {
 
     await synchronize.syncHighlights(exportJson.results);
 
-    expect(resolveSpy).toHaveBeenCalledTimes(5);
+    expect(resolveSpy).toHaveBeenCalledTimes(6);
     expect(existsSpy).toHaveBeenCalledTimes(3);
     expect(existsSpy).toHaveBeenNthCalledWith(1, 'file/path/quotes/highlight1.md');
     expect(existsSpy).toHaveBeenNthCalledWith(2, 'file/path/quotes/highlight2.md');
@@ -91,7 +91,37 @@ describe('Synchronize', () => {
     expect(writeSpy.mock.calls[2][1]).toMatchFileSnapshot(`${snapshotBaseName}index.md`);
   });
 
-  it.todo('should update existing files');
+  it('should update existing files', async () => {
+    await synchronize.syncHighlights(exportJson.results);
+
+    expect(writeSpy).toHaveBeenCalledTimes(3);
+    expect(writeSpy.mock.calls[0][0]).toEqual('file/path/quotes/highlight1.md');
+    expect(writeSpy.mock.calls[0][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 1.md`);
+    expect(writeSpy.mock.calls[1][0]).toEqual('file/path/quotes/highlight2.md');
+    expect(writeSpy.mock.calls[1][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 2.md`);
+    expect(writeSpy.mock.calls[2][0]).toEqual('file/path/index.md');
+    expect(writeSpy.mock.calls[2][1]).toMatchFileSnapshot(`${snapshotBaseName}index.md`);
+
+    resolveSpy.mockReset();
+    resolveSpy
+      .mockReturnValueOnce('file/path/index.md')
+      .mockReturnValueOnce('file/path/quotes/highlight1.md')
+      .mockReturnValueOnce('updated highlight 1 file content')
+      .mockReturnValueOnce('file/path/quotes/highlight2.md')
+      .mockReturnValueOnce('highlight 2 file content')
+      .mockReturnValueOnce('updated index file content');
+    existsSpy.mockResolvedValue(false);
+
+    await synchronize.syncHighlights(exportJson.results);
+
+    expect(writeSpy).toHaveBeenCalledTimes(6);
+    expect(writeSpy.mock.calls[3][0]).toEqual('file/path/quotes/highlight1.md');
+    expect(writeSpy.mock.calls[3][1]).toMatchFileSnapshot(`${snapshotBaseName}updated highlight 1.md`);
+    expect(writeSpy.mock.calls[4][0]).toEqual('file/path/quotes/highlight2.md');
+    expect(writeSpy.mock.calls[4][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 2.md`);
+    expect(writeSpy.mock.calls[5][0]).toEqual('file/path/index.md');
+    expect(writeSpy.mock.calls[5][1]).toMatchFileSnapshot(`${snapshotBaseName}updated index.md`);
+  });
 
   it('should not create index file if path template is empty', async () => {
     resolveSpy.mockReset();
