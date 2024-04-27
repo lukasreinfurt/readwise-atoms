@@ -16,7 +16,6 @@ describe('Synchronize', () => {
   let existsSpy: MockInstance;
   let mkdirSpy: MockInstance;
   let writeSpy: MockInstance;
-  let fetchSpy: MockInstance;
   let synchronize: Synchronize;
 
   beforeAll(() => {
@@ -49,16 +48,19 @@ describe('Synchronize', () => {
     existsSpy = vi.spyOn(app.vault.adapter, 'exists');
     mkdirSpy = vi.spyOn(app.vault.adapter, 'mkdir');
     writeSpy = vi.spyOn(app.vault.adapter, 'write');
-    fetchSpy = vi.spyOn(global, 'fetch');
     snapshotBaseName = `${snapshotBaseDir}/${expect.task.name} - `;
 
     resolveSpy
-      .mockReturnValueOnce('file/path/index.md')
-      .mockReturnValueOnce('file/path/quotes/highlight1.md')
+      .mockReturnValueOnce('file/path/book1/index.md')
+      .mockReturnValueOnce('file/path/book1/quotes/highlight1.md')
       .mockReturnValueOnce('highlight 1 file content')
-      .mockReturnValueOnce('file/path/quotes/highlight2.md')
+      .mockReturnValueOnce('file/path/book1/quotes/highlight2.md')
       .mockReturnValueOnce('highlight 2 file content')
-      .mockReturnValueOnce('index file content');
+      .mockReturnValueOnce('book 1 index file content')
+      .mockReturnValueOnce('file/path/book2/index.md')
+      .mockReturnValueOnce('file/path/book2/quotes/highlight3.md')
+      .mockReturnValueOnce('highlight 3 file content')
+      .mockReturnValueOnce('book 2 index file content');
 
     synchronize = new Synchronize(app, settings, templates);
   });
@@ -68,74 +70,101 @@ describe('Synchronize', () => {
   });
 
   it('should create folders if they do not exists', async () => {
-    existsSpy.mockResolvedValueOnce(false).mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+    existsSpy
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(false);
 
     await synchronize.syncHighlights(exportJson.results);
 
-    expect(resolveSpy).toHaveBeenCalledTimes(6);
-    expect(existsSpy).toHaveBeenCalledTimes(3);
-    expect(existsSpy).toHaveBeenNthCalledWith(1, 'file/path/quotes/highlight1.md');
-    expect(existsSpy).toHaveBeenNthCalledWith(2, 'file/path/quotes/highlight2.md');
-    expect(existsSpy).toHaveBeenNthCalledWith(3, 'file/path/index.md');
-    expect(mkdirSpy).toHaveBeenCalledTimes(2);
-    expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'file/path/quotes');
-    expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'file/path');
+    expect(resolveSpy).toHaveBeenCalledTimes(10);
+    expect(existsSpy).toHaveBeenCalledTimes(5);
+    expect(existsSpy).toHaveBeenNthCalledWith(1, 'file/path/book1/quotes/highlight1.md');
+    expect(existsSpy).toHaveBeenNthCalledWith(2, 'file/path/book1/quotes/highlight2.md');
+    expect(existsSpy).toHaveBeenNthCalledWith(3, 'file/path/book1/index.md');
+    expect(existsSpy).toHaveBeenNthCalledWith(4, 'file/path/book2/quotes/highlight3.md');
+    expect(existsSpy).toHaveBeenNthCalledWith(5, 'file/path/book2/index.md');
+    expect(mkdirSpy).toHaveBeenCalledTimes(4);
+    expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'file/path/book1/quotes');
+    expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'file/path/book1');
+    expect(mkdirSpy).toHaveBeenNthCalledWith(3, 'file/path/book2/quotes');
+    expect(mkdirSpy).toHaveBeenNthCalledWith(4, 'file/path/book2');
   });
 
   it('should write new files', async () => {
     await synchronize.syncHighlights(exportJson.results);
 
-    expect(writeSpy).toHaveBeenCalledTimes(3);
-    expect(writeSpy.mock.calls[0][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 1.md`);
-    expect(writeSpy.mock.calls[1][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 2.md`);
-    expect(writeSpy.mock.calls[2][1]).toMatchFileSnapshot(`${snapshotBaseName}index.md`);
+    expect(writeSpy).toHaveBeenCalledTimes(5);
+    expect(writeSpy.mock.calls[0][1]).toMatchFileSnapshot(`${snapshotBaseName}book1 - highlight 1.md`);
+    expect(writeSpy.mock.calls[1][1]).toMatchFileSnapshot(`${snapshotBaseName}book1 - highlight 2.md`);
+    expect(writeSpy.mock.calls[2][1]).toMatchFileSnapshot(`${snapshotBaseName}book1 - index.md`);
+    expect(writeSpy.mock.calls[3][1]).toMatchFileSnapshot(`${snapshotBaseName}book2 - highlight 3.md`);
+    expect(writeSpy.mock.calls[4][1]).toMatchFileSnapshot(`${snapshotBaseName}book2 - index.md`);
   });
 
   it('should update existing files', async () => {
     await synchronize.syncHighlights(exportJson.results);
 
-    expect(writeSpy).toHaveBeenCalledTimes(3);
-    expect(writeSpy.mock.calls[0][0]).toEqual('file/path/quotes/highlight1.md');
-    expect(writeSpy.mock.calls[0][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 1.md`);
-    expect(writeSpy.mock.calls[1][0]).toEqual('file/path/quotes/highlight2.md');
-    expect(writeSpy.mock.calls[1][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 2.md`);
-    expect(writeSpy.mock.calls[2][0]).toEqual('file/path/index.md');
-    expect(writeSpy.mock.calls[2][1]).toMatchFileSnapshot(`${snapshotBaseName}index.md`);
+    expect(writeSpy).toHaveBeenCalledTimes(5);
+    expect(writeSpy.mock.calls[0][0]).toEqual('file/path/book1/quotes/highlight1.md');
+    expect(writeSpy.mock.calls[0][1]).toMatchFileSnapshot(`${snapshotBaseName}book 1 - highlight 1.md`);
+    expect(writeSpy.mock.calls[1][0]).toEqual('file/path/book1/quotes/highlight2.md');
+    expect(writeSpy.mock.calls[1][1]).toMatchFileSnapshot(`${snapshotBaseName}book 1 - highlight 2.md`);
+    expect(writeSpy.mock.calls[2][0]).toEqual('file/path/book1/index.md');
+    expect(writeSpy.mock.calls[2][1]).toMatchFileSnapshot(`${snapshotBaseName}book 1 - index.md`);
+    expect(writeSpy.mock.calls[3][0]).toEqual('file/path/book2/quotes/highlight3.md');
+    expect(writeSpy.mock.calls[3][1]).toMatchFileSnapshot(`${snapshotBaseName}book 2 - highlight 3.md`);
+    expect(writeSpy.mock.calls[4][0]).toEqual('file/path/book2/index.md');
+    expect(writeSpy.mock.calls[4][1]).toMatchFileSnapshot(`${snapshotBaseName}book 2 - index.md`);
 
     resolveSpy.mockReset();
     resolveSpy
-      .mockReturnValueOnce('file/path/index.md')
-      .mockReturnValueOnce('file/path/quotes/highlight1.md')
+      .mockReturnValueOnce('file/path/book1/index.md')
+      .mockReturnValueOnce('file/path/book1/quotes/highlight1.md')
       .mockReturnValueOnce('updated highlight 1 file content')
-      .mockReturnValueOnce('file/path/quotes/highlight2.md')
+      .mockReturnValueOnce('file/path/book1/quotes/highlight2.md')
       .mockReturnValueOnce('highlight 2 file content')
-      .mockReturnValueOnce('updated index file content');
+      .mockReturnValueOnce('updated book 1 index file content')
+      .mockReturnValueOnce('file/path/book2/index.md')
+      .mockReturnValueOnce('file/path/book2/quotes/highlight3.md')
+      .mockReturnValueOnce('highlight 3 file content')
+      .mockReturnValueOnce('book 2 index file content');
     existsSpy.mockResolvedValue(false);
 
     await synchronize.syncHighlights(exportJson.results);
 
-    expect(writeSpy).toHaveBeenCalledTimes(6);
-    expect(writeSpy.mock.calls[3][0]).toEqual('file/path/quotes/highlight1.md');
-    expect(writeSpy.mock.calls[3][1]).toMatchFileSnapshot(`${snapshotBaseName}updated highlight 1.md`);
-    expect(writeSpy.mock.calls[4][0]).toEqual('file/path/quotes/highlight2.md');
-    expect(writeSpy.mock.calls[4][1]).toMatchFileSnapshot(`${snapshotBaseName}highlight 2.md`);
-    expect(writeSpy.mock.calls[5][0]).toEqual('file/path/index.md');
-    expect(writeSpy.mock.calls[5][1]).toMatchFileSnapshot(`${snapshotBaseName}updated index.md`);
+    expect(writeSpy).toHaveBeenCalledTimes(10);
+    expect(writeSpy.mock.calls[5][0]).toEqual('file/path/book1/quotes/highlight1.md');
+    expect(writeSpy.mock.calls[5][1]).toMatchFileSnapshot(`${snapshotBaseName}book 1 - updated highlight 1.md`);
+    expect(writeSpy.mock.calls[6][0]).toEqual('file/path/book1/quotes/highlight2.md');
+    expect(writeSpy.mock.calls[6][1]).toMatchFileSnapshot(`${snapshotBaseName}book 1 - highlight 2.md`);
+    expect(writeSpy.mock.calls[7][0]).toEqual('file/path/book1/index.md');
+    expect(writeSpy.mock.calls[7][1]).toMatchFileSnapshot(`${snapshotBaseName}book 1 - updated index.md`);
+    expect(writeSpy.mock.calls[8][0]).toEqual('file/path/book2/quotes/highlight3.md');
+    expect(writeSpy.mock.calls[8][1]).toMatchFileSnapshot(`${snapshotBaseName}book 2 - highlight 3.md`);
+    expect(writeSpy.mock.calls[9][0]).toEqual('file/path/book2/index.md');
+    expect(writeSpy.mock.calls[9][1]).toMatchFileSnapshot(`${snapshotBaseName}book 2 - index.md`);
   });
 
   it('should not create index file if path template is empty', async () => {
     resolveSpy.mockReset();
     resolveSpy
       .mockReturnValueOnce('')
-      .mockReturnValueOnce('file/path/quotes/highlight1.md')
+      .mockReturnValueOnce('file/path/book1/quotes/highlight1.md')
       .mockReturnValueOnce('highlight 1 file content')
-      .mockReturnValueOnce('file/path/quotes/highlight2.md')
+      .mockReturnValueOnce('file/path/book1/quotes/highlight2.md')
       .mockReturnValueOnce('highlight 2 file content')
+      .mockReturnValueOnce('')
+      .mockReturnValueOnce('')
+      .mockReturnValueOnce('file/path/book2/quotes/highlight3.md')
+      .mockReturnValueOnce('highlight 3 file content')
       .mockReturnValueOnce('');
     existsSpy.mockResolvedValue(false);
 
     await synchronize.syncHighlights(exportJson.results);
 
-    expect(writeSpy).toHaveBeenCalledTimes(2);
+    expect(writeSpy).toHaveBeenCalledTimes(3);
   });
 });

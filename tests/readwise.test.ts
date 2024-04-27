@@ -1,4 +1,7 @@
 import { MockInstance, afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import response from './__mocks__/response.mock';
+import responsePage1 from './__mocks__/response-page-1.mock';
+import responsePage2 from './__mocks__/response-page-2.mock';
 import * as exportJson from './__mocks__/export.json';
 import Readwise from 'src/features/readwise';
 
@@ -64,7 +67,7 @@ describe('Readwise', () => {
     fetchSpy.mockResolvedValueOnce({
       ok: true,
       status: 200,
-      json: () => exportJson,
+      json: () => response,
     });
 
     const highlights = await readwise.getHighlights();
@@ -86,7 +89,7 @@ describe('Readwise', () => {
       .mockResolvedValue({
         ok: true,
         status: 200,
-        json: () => exportJson,
+        json: () => response,
       });
 
     const highlights = await readwise.getHighlights();
@@ -95,7 +98,24 @@ describe('Readwise', () => {
     expect(fetchSpy).toBeCalledTimes(3);
   });
 
-  it.todo('should handle multi page responses');
+  it('should handle multi page responses', async () => {
+    fetchSpy
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => responsePage1,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: () => responsePage2,
+      });
+
+    const highlights = await readwise.getHighlights();
+
+    expect(highlights).toEqual(exportJson.results);
+    expect(fetchSpy).toBeCalledTimes(3);
+  });
 
   it.todo('should load incremental exports');
 });
