@@ -73,7 +73,29 @@ describe('Readwise', () => {
     expect(fetchSpy).toBeCalledTimes(2);
   });
 
-  it.todo('should handle API rate limits');
+  it('should handle API rate limits', async () => {
+    fetchSpy.mockReset();
+    fetchSpy
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        headers: {
+          get: vi.fn().mockReturnValue(1),
+        },
+      })
+      .mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => exportJson,
+      });
+
+    const highlights = await readwise.getHighlights();
+
+    expect(highlights).toEqual(exportJson.results);
+    expect(fetchSpy).toBeCalledTimes(3);
+  });
+
+  it.todo('should handle multi page responses');
 
   it.todo('should load incremental exports');
 });

@@ -67,6 +67,11 @@ export default class Readwise {
       return response;
     } else {
       if (response.status === 401) throw new InvalidTokenError('The supplied Readwise token seems to be invalid');
+      if (response.status === 429) {
+        const retryAfter = parseInt(response.headers.get('Retry-After') || '30') * 1000 + 1000;
+        await new Promise((_) => setTimeout(_, retryAfter));
+        return this.request(resource, queryParams);
+      }
       const message = `There was an error with the following request: ${URL}\n${response.status}: ${response.statusText}`;
       switch (response.status.toString().substring(0, 1)) {
         case '4':
