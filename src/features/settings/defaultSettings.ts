@@ -6,6 +6,7 @@ import indexPathTemplate from '../templates/index.path.template.md?raw';
 
 const DEFAULT_SETTINGS: Settings = {
   readwiseToken: '',
+  readwiseUpdateAfter: '',
   indexPathTemplate: indexPathTemplate.trim(),
   indexFileTemplate: indexFileTemplate,
   highlightPathTemplate: highlightPathTemplate.trim(),

@@ -50,7 +50,7 @@ export default class Readwise {
     return fullData;
   }
 
-  async request(resource: string, queryParams?: URLSearchParams) {
+  async request(resource: string, queryParams?: URLSearchParams): Promise<Response> {
     const queryParamsString = queryParams && queryParams.toString() !== '' ? '?' + queryParams?.toString() : '';
     const URL = this.apiBaseURL + resource + queryParamsString;
     let response: Response;
