@@ -4,17 +4,27 @@ import responsePage1 from './__mocks__/response-page-1.mock';
 import responsePage2 from './__mocks__/response-page-2.mock';
 import * as exportJson from './__mocks__/export.json';
 import Readwise from 'src/features/readwise';
+import { Settings } from 'src/features/settings';
+import ReadwiseAtoms from 'src/main';
 
 global.fetch = vi.fn();
 
 describe('Readwise', () => {
   let readwise: Readwise;
   let fetchSpy: MockInstance;
+  let saveSettingsSpy: MockInstance;
 
-  beforeEach(async (expect) => {
+  beforeEach(async () => {
     vi.restoreAllMocks();
-    readwise = new Readwise('readwiseToken');
+    readwise = new Readwise({
+      settings: {
+        readwiseToken: 'readwiseToken',
+        readwiseUpdateAfter: '',
+      } as Settings,
+      saveSettings: vi.fn(),
+    } as unknown as ReadwiseAtoms);
     fetchSpy = vi.spyOn(global, 'fetch');
+    saveSettingsSpy = vi.spyOn(readwise.plugin, 'saveSettings');
     fetchSpy.mockResolvedValueOnce({ ok: true, status: 204 }); // token valid response
   });
 
@@ -117,5 +127,43 @@ describe('Readwise', () => {
     expect(fetchSpy).toBeCalledTimes(3);
   });
 
-  it.todo('should load incremental exports');
+  it('should load incremental exports', async () => {
+    const date = new Date('2022-10-01T00:00:00.000Z');
+    vi.useFakeTimers();
+    vi.setSystemTime(date);
+    fetchSpy.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: () => ({ ...responsePage1, nextPageCursor: null }),
+    });
+
+    const highlights1 = await readwise.getHighlights();
+
+    expect(highlights1).toEqual(responsePage1.results);
+    expect(fetchSpy).toBeCalledTimes(2);
+    expect(readwise.plugin.settings.readwiseUpdateAfter).toEqual(date.toISOString());
+    expect(saveSettingsSpy).toHaveBeenCalledOnce();
+
+    fetchSpy.mockReset();
+    fetchSpy.mockResolvedValueOnce({ ok: true, status: 204 }); // token valid response
+    fetchSpy.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: () => responsePage2,
+    });
+
+    const highlights2 = await readwise.getHighlights();
+
+    expect(highlights2).toEqual(responsePage2.results);
+    expect(fetchSpy).toBeCalledTimes(2);
+    expect(fetchSpy).toHaveBeenLastCalledWith(
+      'https://readwise.io/api/v2/export/?updatedAfter=2022-10-01T00%3A00%3A00.000Z',
+      {
+        headers: {
+          Authorization: 'Token readwiseToken',
+        },
+        method: 'GET',
+      }
+    );
+  });
 });

@@ -1,3 +1,4 @@
+import ReadwiseAtoms from 'src/main';
 import ClientError from './ClientError';
 import InvalidTokenError from './InvalidTokenError.ts';
 import NetworkError from './NetworkError';
@@ -6,11 +7,11 @@ import UnidentifiedError from './UnidentifiedError';
 
 export default class Readwise {
   apiBaseURL = 'https://readwise.io/api/v2/';
-  token: string;
-  updatedAfter = null;
+  plugin: ReadwiseAtoms;
+  updatedAfter: string;
 
-  constructor(token: string) {
-    this.token = token;
+  constructor(plugin: ReadwiseAtoms) {
+    this.plugin = plugin;
   }
 
   public async validateToken() {
@@ -30,8 +31,8 @@ export default class Readwise {
         queryParams.append('pageCursor', nextPageCursor);
       }
 
-      if (this.updatedAfter) {
-        queryParams.append('updatedAfter', this.updatedAfter);
+      if (this.plugin.settings.readwiseUpdateAfter) {
+        queryParams.append('updatedAfter', this.plugin.settings.readwiseUpdateAfter);
       }
 
       const response = await this.request('export/', queryParams);
@@ -41,6 +42,8 @@ export default class Readwise {
       nextPageCursor = responseJson['nextPageCursor'];
 
       if (!nextPageCursor) {
+        this.plugin.settings.readwiseUpdateAfter = new Date(Date.now()).toISOString();
+        await this.plugin.saveSettings();
         break;
       }
     }
@@ -56,7 +59,7 @@ export default class Readwise {
       response = await fetch(URL, {
         method: 'GET',
         headers: {
-          Authorization: `Token ${this.token}`,
+          Authorization: `Token ${this.plugin.settings.readwiseToken}`,
         },
       });
     } catch (error) {

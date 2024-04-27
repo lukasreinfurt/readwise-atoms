@@ -40,7 +40,7 @@ export default class ReadwiseAtoms extends Plugin {
 
   private initialize() {
     this.templates = new Templates();
-    this.readwise = new Readwise(this.settings.readwiseToken);
+    this.readwise = new Readwise(this);
     this.synchronize = new Synchronize(this.app, this.settings, this.templates);
     this.notifications = new Notifications();
     this.commands = new Commands();

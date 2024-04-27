@@ -28,18 +28,12 @@ describe('Synchronize', () => {
         },
       },
     } as unknown as App;
-    settings = {
-      readwiseToken: '',
-      highlightPathTemplate: '',
-      highlightFileTemplate: '',
-      indexPathTemplate: '',
-      indexFileTemplate: '',
-    };
+    settings = {} as unknown as Settings;
     templates = {
       templates: [],
       resolve: vi.fn(),
       compile: vi.fn(),
-    };
+    } as unknown as Templates;
   });
 
   beforeEach(async (expect) => {
