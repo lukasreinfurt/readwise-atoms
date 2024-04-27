@@ -4,14 +4,13 @@ import * as exportJson from './__mocks__/export.json';
 import { Templates } from 'src/features/templates';
 import Synchronize from 'src/features/synchronize';
 import { Settings } from 'src/features/settings';
+import ReadwiseAtoms from 'src/main';
 
 describe('Synchronize', () => {
   const snapshotBaseDir = '__snapshots__';
   let snapshotBaseName: string;
 
-  let app: App;
-  let settings: Settings;
-  let templates: Templates;
+  let plugin: ReadwiseAtoms;
   let resolveSpy: MockInstance;
   let existsSpy: MockInstance;
   let mkdirSpy: MockInstance;
@@ -19,29 +18,31 @@ describe('Synchronize', () => {
   let synchronize: Synchronize;
 
   beforeAll(() => {
-    app = {
-      vault: {
-        adapter: {
-          exists: vi.fn(),
-          mkdir: vi.fn(),
-          write: vi.fn(),
+    plugin = {
+      app: {
+        vault: {
+          adapter: {
+            exists: vi.fn(),
+            mkdir: vi.fn(),
+            write: vi.fn(),
+          },
         },
-      },
-    } as unknown as App;
-    settings = {} as unknown as Settings;
-    templates = {
-      templates: [],
-      resolve: vi.fn(),
-      compile: vi.fn(),
-    } as unknown as Templates;
+      } as unknown as App,
+      settings: {} as unknown as Settings,
+      templates: {
+        templates: [],
+        resolve: vi.fn(),
+        compile: vi.fn(),
+      } as unknown as Templates,
+    } as unknown as ReadwiseAtoms;
   });
 
   beforeEach(async (expect) => {
     vi.restoreAllMocks();
-    resolveSpy = vi.spyOn(templates, 'resolve');
-    existsSpy = vi.spyOn(app.vault.adapter, 'exists');
-    mkdirSpy = vi.spyOn(app.vault.adapter, 'mkdir');
-    writeSpy = vi.spyOn(app.vault.adapter, 'write');
+    resolveSpy = vi.spyOn(plugin.templates, 'resolve');
+    existsSpy = vi.spyOn(plugin.app.vault.adapter, 'exists');
+    mkdirSpy = vi.spyOn(plugin.app.vault.adapter, 'mkdir');
+    writeSpy = vi.spyOn(plugin.app.vault.adapter, 'write');
     snapshotBaseName = `${snapshotBaseDir}/${expect.task.name} - `;
 
     resolveSpy
@@ -56,7 +57,7 @@ describe('Synchronize', () => {
       .mockReturnValueOnce('highlight 3 file content')
       .mockReturnValueOnce('book 2 index file content');
 
-    synchronize = new Synchronize(app, settings, templates);
+    synchronize = new Synchronize(plugin);
   });
 
   afterAll(() => {
