@@ -1,6 +1,4 @@
-import { App, DataAdapter } from 'obsidian';
-import { Settings } from '../settings';
-import { Templates } from '../templates';
+import { DataAdapter } from 'obsidian';
 import ReadwiseAtoms from 'src/main';
 
 export default class Synchronize {
@@ -8,6 +6,10 @@ export default class Synchronize {
   fs: DataAdapter;
 
   constructor(plugin: ReadwiseAtoms) {
+    this.update(plugin);
+  }
+
+  update(plugin: ReadwiseAtoms) {
     this.plugin = plugin;
     this.fs = this.plugin.app.vault.adapter;
   }
@@ -18,11 +20,21 @@ export default class Synchronize {
     const indexPathTemplate = this.plugin.settings.indexPathTemplate;
     const indexFileTemplate = this.plugin.settings.indexFileTemplate;
 
+    const totalHighlights = books.reduce((a: number, b: any) => a + b.highlights.length, 0);
+    let currentHighlight = 0;
+
+    this.plugin.notifications.log(`found ${totalHighlights} highlights to synchronize`);
+
     for await (const book of books) {
       const indexFilePath = this.plugin.templates.resolve({ indexPathTemplate }, book);
       const indexFolderPath = indexFilePath.substring(0, indexFilePath.lastIndexOf('/'));
 
       for await (const highlight of book.highlights) {
+        currentHighlight++;
+        this.plugin.notifications.setStatusBarText(
+          `synchronizing ${totalHighlights} highlights: ${((currentHighlight / totalHighlights) * 100).toFixed(0)}%`,
+          false
+        );
         const data = { book: book, highlight: highlight };
         const highlightFilePath = this.plugin.templates.resolve({ highlightPathTemplate }, data);
         const highlightFolderPath = highlightFilePath.substring(0, highlightFilePath.lastIndexOf('/'));

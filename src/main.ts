@@ -13,10 +13,19 @@ export default class ReadwiseAtoms extends Plugin {
   synchronize: Synchronize;
   notifications: Notifications;
   commands: Commands;
+  isMobile: boolean;
 
   async onload() {
+    this.isMobile = document.body.hasClass('is-mobile');
+
     await this.loadSettings();
-    this.initialize();
+
+    this.notifications = new Notifications(this);
+    this.notifications.createStatusBarItem();
+    this.templates = new Templates();
+    this.readwise = new Readwise(this);
+    this.synchronize = new Synchronize(this);
+    this.commands = new Commands();
 
     this.addSettingTab(new SettingTab(this.app, this));
 
@@ -35,14 +44,8 @@ export default class ReadwiseAtoms extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
-    this.initialize();
-  }
-
-  private initialize() {
-    this.templates = new Templates();
-    this.readwise = new Readwise(this);
-    this.synchronize = new Synchronize(this);
-    this.notifications = new Notifications();
-    this.commands = new Commands();
+    this.notifications.update(this);
+    this.readwise.update(this);
+    this.synchronize.update(this), this.notifications.log('settings saved');
   }
 }

@@ -11,6 +11,10 @@ export default class Readwise {
   updatedAfter: string;
 
   constructor(plugin: ReadwiseAtoms) {
+    this.update(plugin);
+  }
+
+  update(plugin: ReadwiseAtoms) {
     this.plugin = plugin;
   }
 
@@ -24,6 +28,8 @@ export default class Readwise {
 
     await this.validateToken();
 
+    this.plugin.notifications.setStatusBarText('downloading new highlights');
+
     while (true) {
       const queryParams = new URLSearchParams();
 
@@ -31,7 +37,7 @@ export default class Readwise {
         queryParams.append('pageCursor', nextPageCursor);
       }
 
-      if (this.plugin.settings.readwiseUpdateAfter) {
+      if (this.plugin.settings.readwiseUpdateAfter && this.plugin.settings.readwiseUpdateAfter !== '') {
         queryParams.append('updatedAfter', this.plugin.settings.readwiseUpdateAfter);
       }
 
@@ -55,6 +61,8 @@ export default class Readwise {
     const URL = this.apiBaseURL + resource + queryParamsString;
     let response: Response;
 
+    this.plugin.notifications.log(`requesting ${URL}`);
+
     try {
       response = await fetch(URL, {
         method: 'GET',
@@ -67,11 +75,13 @@ export default class Readwise {
     }
 
     if (response.ok) {
+      this.plugin.notifications.log('response ok');
       return response;
     } else {
       if (response.status === 401) throw new InvalidTokenError('The supplied Readwise token seems to be invalid');
       if (response.status === 429) {
         const retryAfter = parseInt(response.headers.get('Retry-After') || '30') * 1000 + 1000;
+        this.plugin.notifications.log(`rate limit reached, retrying in ${retryAfter} seconds`);
         await new Promise((_) => setTimeout(_, retryAfter));
         return this.request(resource, queryParams);
       }
