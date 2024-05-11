@@ -2,8 +2,8 @@ import { MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi
 import { App, PluginManifest } from 'obsidian';
 import ReadwiseAtoms from '../src/main';
 import * as dataJson from './__mocks__/data.json';
-import indexFileTemplateDefault from '../src/features/templates/index.file.template.md?raw';
-import highlightFileTemplateDefault from '../src/features/templates/highlight.file.template.md?raw';
+import indexFileTemplateDefault from '../src/features/templates/index.file.template.handlebars?raw';
+import highlightFileTemplateDefault from '../src/features/templates/highlight.file.template.handlebars?raw';
 
 describe('Settings', () => {
   let plugin: ReadwiseAtoms;
@@ -25,8 +25,9 @@ describe('Settings', () => {
   });
 
   it('should have correct default values', () => {
-    const indexPathTemplateDefault = 'Readwise Atoms/{{author}} - {{title}}/index.md';
-    const highlightPathTemplateDefault = 'Readwise Atoms/{{book.author}} - {{book.title}}/quotes/{{highlight.id}}.md';
+    const indexPathTemplateDefault = 'Readwise Atoms/{{{author}}} - {{{title}}}/index.md';
+    const highlightPathTemplateDefault =
+      'Readwise Atoms/{{{book.author}}} - {{{book.title}}}/quotes/{{{highlight.id}}}.md';
 
     expect(loadDataSpy).toHaveBeenCalledOnce();
     expect(plugin.settings.readwiseToken).toEqual('');

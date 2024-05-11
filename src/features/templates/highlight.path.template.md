@@ -1,1 +1,0 @@
-Readwise Atoms/{{book.author}} - {{book.title}}/quotes/{{highlight.id}}.md

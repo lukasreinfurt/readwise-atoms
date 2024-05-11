@@ -1,48 +1,24 @@
-import { MockInstance, afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { App } from 'obsidian';
+import { MockInstance, afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as exportJson from './__mocks__/export.json';
-import { Templates } from 'src/features/templates';
 import Synchronize from 'src/features/synchronize';
-import { Settings } from 'src/features/settings';
-import ReadwiseAtoms from 'src/main';
+import mockPlugin from './__mocks__/plugin';
 
 describe('Synchronize', () => {
   const snapshotBaseDir = '__snapshots__';
   let snapshotBaseName: string;
 
-  let plugin: ReadwiseAtoms;
   let resolveSpy: MockInstance;
   let existsSpy: MockInstance;
   let mkdirSpy: MockInstance;
   let writeSpy: MockInstance;
   let synchronize: Synchronize;
 
-  beforeAll(() => {
-    plugin = {
-      app: {
-        vault: {
-          adapter: {
-            exists: vi.fn(),
-            mkdir: vi.fn(),
-            write: vi.fn(),
-          },
-        },
-      } as unknown as App,
-      settings: {} as unknown as Settings,
-      templates: {
-        templates: [],
-        resolve: vi.fn(),
-        compile: vi.fn(),
-      } as unknown as Templates,
-    } as unknown as ReadwiseAtoms;
-  });
-
   beforeEach(async (expect) => {
     vi.restoreAllMocks();
-    resolveSpy = vi.spyOn(plugin.templates, 'resolve');
-    existsSpy = vi.spyOn(plugin.app.vault.adapter, 'exists');
-    mkdirSpy = vi.spyOn(plugin.app.vault.adapter, 'mkdir');
-    writeSpy = vi.spyOn(plugin.app.vault.adapter, 'write');
+    resolveSpy = vi.spyOn(mockPlugin.templates, 'resolve');
+    existsSpy = vi.spyOn(mockPlugin.app.vault.adapter, 'exists');
+    mkdirSpy = vi.spyOn(mockPlugin.app.vault.adapter, 'mkdir');
+    writeSpy = vi.spyOn(mockPlugin.app.vault.adapter, 'write');
     snapshotBaseName = `${snapshotBaseDir}/${expect.task.name} - `;
 
     resolveSpy
@@ -57,7 +33,7 @@ describe('Synchronize', () => {
       .mockReturnValueOnce('highlight 3 file content')
       .mockReturnValueOnce('book 2 index file content');
 
-    synchronize = new Synchronize(plugin);
+    synchronize = new Synchronize(mockPlugin);
   });
 
   afterAll(() => {

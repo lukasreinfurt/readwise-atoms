@@ -4,8 +4,7 @@ import responsePage1 from './__mocks__/response-page-1.mock';
 import responsePage2 from './__mocks__/response-page-2.mock';
 import * as exportJson from './__mocks__/export.json';
 import Readwise from 'src/features/readwise';
-import { Settings } from 'src/features/settings';
-import ReadwiseAtoms from 'src/main';
+import mockPlugin from './__mocks__/plugin';
 
 global.fetch = vi.fn();
 
@@ -16,13 +15,7 @@ describe('Readwise', () => {
 
   beforeEach(async () => {
     vi.restoreAllMocks();
-    readwise = new Readwise({
-      settings: {
-        readwiseToken: 'readwiseToken',
-        readwiseUpdateAfter: '',
-      } as Settings,
-      saveSettings: vi.fn(),
-    } as unknown as ReadwiseAtoms);
+    readwise = new Readwise(mockPlugin);
     fetchSpy = vi.spyOn(global, 'fetch');
     saveSettingsSpy = vi.spyOn(readwise.plugin, 'saveSettings');
     fetchSpy.mockResolvedValueOnce({ ok: true, status: 204 }); // token valid response

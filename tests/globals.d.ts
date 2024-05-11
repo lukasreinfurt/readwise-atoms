@@ -1,1 +1,1 @@
-declare module '*.md?raw';
+declare module '*.handlebars?raw';

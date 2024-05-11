@@ -1,8 +1,8 @@
 import Settings from './settings';
-import highlightFileTemplate from '../templates/highlight.file.template.md?raw';
-import highlightPathTemplate from '../templates/highlight.path.template.md?raw';
-import indexFileTemplate from '../templates/index.file.template.md?raw';
-import indexPathTemplate from '../templates/index.path.template.md?raw';
+import highlightFileTemplate from '../templates/highlight.file.template.handlebars?raw';
+import highlightPathTemplate from '../templates/highlight.path.template.handlebars?raw';
+import indexFileTemplate from '../templates/index.file.template.handlebars?raw';
+import indexPathTemplate from '../templates/index.path.template.handlebars?raw';
 
 const DEFAULT_SETTINGS: Settings = {
   readwiseToken: '',
