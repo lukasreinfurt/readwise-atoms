@@ -18,9 +18,11 @@ export default class SettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
+    new Setting(containerEl).setName('General').setHeading();
+
     new Setting(containerEl)
       .setName('Readwise Token')
-      .setDesc('Your Readwise token can be found at https://readwise.io/access_tokens')
+      .setDesc(this.readwiseTokenDescription())
       .addText((text) =>
         text
           .setPlaceholder('Enter your Readwise token')
@@ -30,6 +32,10 @@ export default class SettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           })
       );
+
+    new Setting(containerEl).setName('Templates').setHeading();
+
+    new Setting(containerEl).setDesc(this.generalTemplateDescription());
 
     new Setting(containerEl)
       .setName('Index Path Template')
@@ -88,26 +94,69 @@ export default class SettingTab extends PluginSettingTab {
       });
   }
 
+  private readwiseTokenDescription(): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+
+    const readwiseToken = document.createElement('a');
+    readwiseToken.href = 'https://readwise.io/access_tokens';
+    readwiseToken.text = 'https://readwise.io/access_tokens';
+    readwiseToken.target = '_blank';
+
+    fragment.appendText('A token is required to access the Readwise API. ');
+    fragment.appendText('It can be found at ');
+    fragment.appendChild(readwiseToken);
+    fragment.appendText('.');
+
+    return fragment;
+  }
+
+  private generalTemplateDescription(): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+
+    const handlebars = document.createElement('a');
+    handlebars.href = 'https://handlebarsjs.com/guide/#simple-expressions';
+    handlebars.text = 'handlebars';
+    handlebars.target = '_blank';
+
+    const here = document.createElement('a');
+    here.href = 'https://handlebarsjs.com/guide/#html-escaping';
+    here.text = 'here';
+    here.target = '_blank';
+
+    const readwiseApiDocumentation = document.createElement('a');
+    readwiseApiDocumentation.href = 'https://readwise.io/api_deets';
+    readwiseApiDocumentation.text = 'Readwisse api documentation';
+    readwiseApiDocumentation.target = '_blank';
+
+    fragment.appendText('All templates use the ');
+    fragment.appendChild(handlebars);
+    fragment.appendText(' templating language. ');
+    fragment.appendText(
+      'Note that handlebars HTML escapes values inserted with double-stash expressions like {{ this }}. Use tripe-stash expressions like {{{ this }}} wherever you want to insert text as is. You can find more information '
+    );
+    fragment.appendChild(here);
+    fragment.appendText('.');
+
+    fragment.appendChild(document.createElement('br'));
+    fragment.appendChild(document.createElement('br'));
+
+    fragment.appendText(
+      'Templates have access to the Readwise metadata of the currently processed highlight and/or its corresponding book, such as: ' +
+        'book.title, book.author, book.highlights, highlight.id, highlight.text, etc. '
+    );
+    fragment.appendText('You can find more about all options in the ');
+    fragment.appendChild(readwiseApiDocumentation);
+    fragment.appendText(' in the highlight export response example.');
+
+    return fragment;
+  }
+
   private indexPathTemplateDescription(): DocumentFragment {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
       'An index file can be created for each book that is imported from Readwise. ' +
-        'This template controls where these files will be created and how they will be called.'
+        'This template controls where these files will be created and how they will be named.'
     );
-
-    fragment.appendChild(document.createElement('br'));
-    fragment.appendChild(document.createElement('br'));
-
-    this.addHandlebarsLink(fragment);
-
-    fragment.appendChild(document.createElement('br'));
-    fragment.appendChild(document.createElement('br'));
-
-    fragment.appendText(
-      'This template has access to the Readwise metadata of the currently processed highlight and its corresponding book, such as' +
-        'title, author, source, book_tags, category, readwise_url, etc. '
-    );
-    this.addReadwiseApiLink(fragment);
 
     fragment.appendChild(document.createElement('br'));
     fragment.appendChild(document.createElement('br'));
@@ -122,20 +171,6 @@ export default class SettingTab extends PluginSettingTab {
       'This template controls the content of the index files. ' +
         'It can be used to link to all highlights from the book or list any other book metadata that you might want to see here.'
     );
-
-    fragment.appendChild(document.createElement('br'));
-    fragment.appendChild(document.createElement('br'));
-
-    this.addHandlebarsLink(fragment);
-
-    fragment.appendChild(document.createElement('br'));
-    fragment.appendChild(document.createElement('br'));
-
-    fragment.appendText(
-      'This template has access to the Readwise metadata of the currently processed book, such as: ' +
-        'title, author, highlights, etc. '
-    );
-    this.addReadwiseApiLink(fragment);
     return fragment;
   }
 
@@ -143,23 +178,8 @@ export default class SettingTab extends PluginSettingTab {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
       'A highlight file is created for each highlight that is imported from Readwise. ' +
-        'This template controls where these files will be created and how they will be called.'
+        'This template controls where these files will be created and how they will be named.'
     );
-
-    fragment.appendChild(document.createElement('br'));
-    fragment.appendChild(document.createElement('br'));
-
-    this.addHandlebarsLink(fragment);
-
-    fragment.appendChild(document.createElement('br'));
-    fragment.appendChild(document.createElement('br'));
-
-    fragment.appendText(
-      'This template has access to the Readwise metadata of the currently processed highlight and its corresponding book, such as: ' +
-        'book.title, book.author, highlight.id, highlight.text, etc. '
-    );
-    this.addReadwiseApiLink(fragment);
-
     return fragment;
   }
 
@@ -169,42 +189,6 @@ export default class SettingTab extends PluginSettingTab {
       'This template controls the content of the highlight files. ' +
         'It can be used to show the highlight text, list any other highlight metadata, and link back to the book index note.'
     );
-
-    fragment.appendChild(document.createElement('br'));
-    fragment.appendChild(document.createElement('br'));
-
-    this.addHandlebarsLink(fragment);
-
-    fragment.appendChild(document.createElement('br'));
-    fragment.appendChild(document.createElement('br'));
-
-    fragment.appendText(
-      'This template has access to the Readwise metadata of the currently processed highlight and its corresponding book, such as: ' +
-        'book.title, book.author, highlight.id, highlight.text, etc. '
-    );
-    this.addReadwiseApiLink(fragment);
     return fragment;
-  }
-
-  private addHandlebarsLink(fragment: DocumentFragment) {
-    const a = document.createElement('a');
-    a.href = 'https://handlebarsjs.com/guide/#simple-expressions';
-    a.text = 'handlebars';
-    a.target = '_blank';
-
-    fragment.appendText('The templating language used is ');
-    fragment.appendChild(a);
-    fragment.appendText('.');
-  }
-
-  private addReadwiseApiLink(fragment: DocumentFragment) {
-    const a = document.createElement('a');
-    a.href = 'https://readwise.io/api_deets';
-    a.text = 'Readwisse api documentation';
-    a.target = '_blank';
-
-    fragment.appendText('You can find more about all options in the ');
-    fragment.appendChild(a);
-    fragment.appendText(' in the highlight export response example.');
   }
 }
