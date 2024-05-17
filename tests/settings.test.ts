@@ -25,7 +25,7 @@ describe('Settings', () => {
   });
 
   it('should have correct default values', () => {
-    const indexPathTemplateDefault = 'Readwise Atoms/{{{author}}} - {{{title}}}/index.md';
+    const indexPathTemplateDefault = 'Readwise Atoms/{{{book.author}}} - {{{book.title}}}/index.md';
     const highlightPathTemplateDefault =
       'Readwise Atoms/{{{book.author}}} - {{{book.title}}}/quotes/{{{highlight.id}}}.md';
 

@@ -49,7 +49,8 @@ export default class Synchronize {
         }
       }
 
-      const indexFilePath = this.cleanUpFileName(this.plugin.templates.resolve({ indexPathTemplate }, book));
+      const data = { book: book };
+      const indexFilePath = this.cleanUpFileName(this.plugin.templates.resolve({ indexPathTemplate }, data));
       const indexFolderPath = indexFilePath.substring(0, indexFilePath.lastIndexOf('/'));
 
       if (indexFolderPath !== '') {
@@ -57,7 +58,7 @@ export default class Synchronize {
           await this.vault.createFolder(indexFolderPath);
         }
 
-        const indexFileContent = this.plugin.templates.resolve({ indexFileTemplate }, book);
+        const indexFileContent = this.plugin.templates.resolve({ indexFileTemplate }, data);
         const indexFile = this.vault.getFileByPath(indexFilePath);
         if (!indexFile) {
           await this.vault.create(indexFilePath, indexFileContent);

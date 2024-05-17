@@ -1,10 +1,10 @@
 ---
-title: {{{ title }}}
-author: {{{ author }}}
+title: {{{ book.title }}}
+author: {{{ book.author }}}
 ---
 
 ## Quotes
 
-{{#each highlights }}
+{{#each book.highlights }}
 ![[{{{ id }}}]]
 {{/each}}
