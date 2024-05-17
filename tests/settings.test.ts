@@ -14,7 +14,7 @@ describe('Settings', () => {
     plugin.loadData = vi.fn();
   });
 
-  beforeEach(async (expect) => {
+  beforeEach(async () => {
     vi.restoreAllMocks();
     loadDataSpy = vi.spyOn(plugin, 'loadData');
     await plugin.loadSettings();

@@ -4,11 +4,11 @@ import ReadwiseAtoms from 'src/main';
 export default {
   app: {
     vault: {
-      adapter: {
-        exists: vi.fn(),
-        mkdir: vi.fn(),
-        write: vi.fn(),
-      },
+      getFolderByPath: vi.fn(),
+      getFileByPath: vi.fn(),
+      create: vi.fn(),
+      createFolder: vi.fn(),
+      modify: vi.fn(),
     },
   },
   settings: {

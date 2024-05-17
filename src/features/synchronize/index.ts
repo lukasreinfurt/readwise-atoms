@@ -1,9 +1,9 @@
-import { DataAdapter } from 'obsidian';
+import { normalizePath, Vault } from 'obsidian';
 import ReadwiseAtoms from 'src/main';
 
 export default class Synchronize {
   plugin: ReadwiseAtoms;
-  fs: DataAdapter;
+  vault: Vault;
 
   constructor(plugin: ReadwiseAtoms) {
     this.update(plugin);
@@ -11,7 +11,7 @@ export default class Synchronize {
 
   update(plugin: ReadwiseAtoms) {
     this.plugin = plugin;
-    this.fs = this.plugin.app.vault.adapter;
+    this.vault = this.plugin.app.vault;
   }
 
   async syncHighlights(books: any) {
@@ -26,9 +26,6 @@ export default class Synchronize {
     this.plugin.notifications.log(`found ${totalHighlights} highlights to synchronize`);
 
     for await (const book of books) {
-      const indexFilePath = this.plugin.templates.resolve({ indexPathTemplate }, book);
-      const indexFolderPath = indexFilePath.substring(0, indexFilePath.lastIndexOf('/'));
-
       for await (const highlight of book.highlights) {
         currentHighlight++;
         this.plugin.notifications.setStatusBarText(
@@ -36,22 +33,43 @@ export default class Synchronize {
           false
         );
         const data = { book: book, highlight: highlight };
-        const highlightFilePath = this.plugin.templates.resolve({ highlightPathTemplate }, data);
+        const highlightFilePath = this.cleanUpFileName(this.plugin.templates.resolve({ highlightPathTemplate }, data));
         const highlightFolderPath = highlightFilePath.substring(0, highlightFilePath.lastIndexOf('/'));
-        if (!(await this.fs.exists(highlightFilePath))) {
-          await this.fs.mkdir(highlightFolderPath);
+
+        if (!this.vault.getFolderByPath(highlightFolderPath)) {
+          await this.vault.createFolder(highlightFolderPath);
         }
+
         const highlightFileContent = this.plugin.templates.resolve({ highlightFileTemplate }, data);
-        await this.fs.write(highlightFilePath, highlightFileContent);
+        const highlightFile = this.vault.getFileByPath(highlightFilePath);
+        if (!highlightFile) {
+          await this.vault.create(highlightFilePath, highlightFileContent);
+        } else {
+          await this.vault.modify(highlightFile, highlightFileContent);
+        }
       }
 
+      const indexFilePath = this.cleanUpFileName(this.plugin.templates.resolve({ indexPathTemplate }, book));
+      const indexFolderPath = indexFilePath.substring(0, indexFilePath.lastIndexOf('/'));
+
       if (indexFolderPath !== '') {
-        if (!(await this.fs.exists(indexFilePath))) {
-          await this.fs.mkdir(indexFolderPath);
+        if (!this.vault.getFolderByPath(indexFolderPath)) {
+          await this.vault.createFolder(indexFolderPath);
         }
+
         const indexFileContent = this.plugin.templates.resolve({ indexFileTemplate }, book);
-        await this.fs.write(indexFilePath, indexFileContent);
+        const indexFile = this.vault.getFileByPath(indexFilePath);
+        if (!indexFile) {
+          await this.vault.create(indexFilePath, indexFileContent);
+        } else {
+          await this.vault.modify(indexFile, indexFileContent);
+        }
       }
     }
+  }
+
+  private cleanUpFileName(fileName: string): string {
+    fileName = fileName.replace(/:/g, ' -');
+    return normalizePath(fileName);
   }
 }

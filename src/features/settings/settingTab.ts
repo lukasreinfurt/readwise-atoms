@@ -18,10 +18,8 @@ export default class SettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    new Setting(containerEl).setName('General').setHeading();
-
     new Setting(containerEl)
-      .setName('Readwise Token')
+      .setName('Readwise token')
       .setDesc(this.readwiseTokenDescription())
       .addText((text) =>
         text
@@ -38,7 +36,7 @@ export default class SettingTab extends PluginSettingTab {
     new Setting(containerEl).setDesc(this.generalTemplateDescription());
 
     new Setting(containerEl)
-      .setName('Index Path Template')
+      .setName('Index path template')
       .setDesc(this.indexPathTemplateDescription())
       .addText((text) =>
         text
@@ -51,7 +49,7 @@ export default class SettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Index File Template')
+      .setName('Index file template')
       .setDesc(this.indexFileTemplateDescription())
       .addTextArea((text) => {
         text
@@ -66,7 +64,7 @@ export default class SettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
-      .setName('Highlight Path Template')
+      .setName('Highlight path template')
       .setDesc(this.highlightPathTemplateDescription())
       .addText((text) =>
         text
@@ -79,7 +77,7 @@ export default class SettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName('Highlight File Template')
+      .setName('Highlight file template')
       .setDesc(this.highlightFileTemplateDescription())
       .addTextArea((text) => {
         text
