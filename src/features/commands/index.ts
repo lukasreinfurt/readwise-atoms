@@ -16,4 +16,10 @@ export default class Commands {
       plugin.notifications.setStatusBarText('', false);
     }
   }
+
+  public async resync(plugin: ReadwiseAtoms) {
+    plugin.settings.readwiseUpdateAfter = '';
+    await plugin.saveSettings();
+    await this.sync(plugin);
+  }
 }

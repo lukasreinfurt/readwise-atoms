@@ -11,6 +11,7 @@ describe('Commands', () => {
   let getHighlightsSpy: MockInstance;
   let syncHighlightsSpy: MockInstance;
   let noticeSpy: MockInstance;
+  let saveSettingsSpy: MockInstance;
   let commands: Commands;
 
   beforeEach(async () => {
@@ -18,6 +19,7 @@ describe('Commands', () => {
     getHighlightsSpy = vi.spyOn(mockPlugin.readwise, 'getHighlights');
     syncHighlightsSpy = vi.spyOn(mockPlugin.synchronize, 'syncHighlights');
     noticeSpy = vi.spyOn(mockPlugin.notifications, 'notice');
+    saveSettingsSpy = vi.spyOn(mockPlugin, 'saveSettings');
     commands = new Commands();
   });
 
@@ -84,6 +86,19 @@ describe('Commands', () => {
       expect(noticeSpy).toHaveBeenCalledTimes(2);
       expect(noticeSpy).toHaveBeenCalledWith('synchronizing highlights');
       expect(noticeSpy).toHaveBeenCalledWith('synchronization error: unidentified error');
+    });
+  });
+
+  describe('resync', () => {
+    it('should reset readwiseUpdateAfter and sync', async () => {
+      getHighlightsSpy.mockResolvedValue([1, 2, 3]);
+
+      await commands.resync(mockPlugin);
+
+      expect(saveSettingsSpy).toHaveBeenCalledOnce();
+      expect(getHighlightsSpy).toHaveBeenCalledOnce();
+      expect(syncHighlightsSpy).toHaveBeenCalledOnce();
+      expect(syncHighlightsSpy).toHaveBeenCalledWith([1, 2, 3]);
     });
   });
 });

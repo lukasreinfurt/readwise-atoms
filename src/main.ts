@@ -34,6 +34,12 @@ export default class ReadwiseAtoms extends Plugin {
       name: 'Sync',
       callback: async () => this.commands.sync(this),
     });
+
+    this.addCommand({
+      id: 'resync',
+      name: 'Resync',
+      callback: async () => this.commands.resync(this),
+    });
   }
 
   onunload() {}
@@ -46,6 +52,7 @@ export default class ReadwiseAtoms extends Plugin {
     await this.saveData(this.settings);
     this.notifications.update(this);
     this.readwise.update(this);
-    this.synchronize.update(this), this.notifications.log('settings saved');
+    this.synchronize.update(this);
+    this.notifications.log('settings saved');
   }
 }
