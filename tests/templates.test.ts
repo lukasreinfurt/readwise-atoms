@@ -77,12 +77,12 @@ describe('Templates', () => {
   });
 
   it('should provide correct template preset for index file', () => {
-    const resolvedTemplate = templates.resolve({ indexFileTemplate }, mockBook);
+    const resolvedTemplate = templates.resolve({ indexFileTemplate }, mockData);
     expect(resolvedTemplate).toMatchFileSnapshot(`${snapshotBaseName}index file template.md`);
   });
 
   it('should provide correct template preset for index path', () => {
-    const resolvedTemplate = templates.resolve({ indexPathTemplate }, mockBook);
+    const resolvedTemplate = templates.resolve({ indexPathTemplate }, mockData);
     expect(resolvedTemplate).toMatchFileSnapshot(`${snapshotBaseName}index path template.md`);
   });
 });

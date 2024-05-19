@@ -159,7 +159,7 @@ export default class SettingTab extends PluginSettingTab {
     fragment.appendChild(document.createElement('br'));
     fragment.appendChild(document.createElement('br'));
 
-    fragment.appendText("Leave empty if you don't want to create book index files.");
+    fragment.appendText("Leave empty if you don't want to create index files.");
     return fragment;
   }
 
@@ -167,7 +167,7 @@ export default class SettingTab extends PluginSettingTab {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
       'This template controls the content of the index files. ' +
-        'It can be used to link to all highlights from the book or list any other book metadata that you might want to see here.'
+        'It can be used to link to all highlights from the book or list any other metadata that you might want to see here.'
     );
     return fragment;
   }
@@ -185,7 +185,7 @@ export default class SettingTab extends PluginSettingTab {
     const fragment = document.createDocumentFragment();
     fragment.appendText(
       'This template controls the content of the highlight files. ' +
-        'It can be used to show the highlight text, list any other highlight metadata, and link back to the book index note.'
+        'It can be used to show the highlight text, list any other highlight metadata, and link back to the corresponding index note.'
     );
     return fragment;
   }
