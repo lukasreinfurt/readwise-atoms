@@ -3,9 +3,8 @@
   "name": "Readwise Atoms",
   "version": "0.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Imports highlights from readwise into seperate notes",
+  "description": "Imports highlights from Readwise into seperate notes",
   "author": "Lukas Reinfurt",
   "authorUrl": "https://lukasreinfurt.com",
-  "fundingUrl": "https://lukasreinfurt.com",
   "isDesktopOnly": false
 }
