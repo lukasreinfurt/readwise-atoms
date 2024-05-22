@@ -9,6 +9,7 @@ export default class Notifications {
 
   constructor(plugin: ReadwiseAtoms) {
     this.update(plugin);
+    this.createStatusBarItem();
   }
 
   update(plugin: ReadwiseAtoms) {

@@ -7,6 +7,7 @@ import indexPathTemplate from '../templates/index.path.template.handlebars?raw';
 const DEFAULT_SETTINGS: Settings = {
   readwiseToken: '',
   readwiseUpdateAfter: '',
+  syncOnStart: false,
   indexPathTemplate: indexPathTemplate.trim(),
   indexFileTemplate: indexFileTemplate,
   highlightPathTemplate: highlightPathTemplate.trim(),

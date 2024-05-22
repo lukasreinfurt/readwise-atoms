@@ -31,6 +31,16 @@ export default class SettingTab extends PluginSettingTab {
           })
       );
 
+    new Setting(containerEl)
+      .setName('Synchronize on start')
+      .setDesc(this.syncOnStartDescription())
+      .addToggle((value) =>
+        value.setValue(this.plugin.settings.syncOnStart).onChange(async (value) => {
+          this.plugin.settings.syncOnStart = value;
+          await this.plugin.saveSettings();
+        })
+      );
+
     new Setting(containerEl).setName('Templates').setHeading();
 
     new Setting(containerEl).setDesc(this.generalTemplateDescription());
@@ -104,6 +114,14 @@ export default class SettingTab extends PluginSettingTab {
     fragment.appendText('It can be found at ');
     fragment.appendChild(readwiseToken);
     fragment.appendText('.');
+
+    return fragment;
+  }
+
+  private syncOnStartDescription(): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+
+    fragment.appendText('Whether the plugin should synchronize new or changed highlights on each start.');
 
     return fragment;
   }

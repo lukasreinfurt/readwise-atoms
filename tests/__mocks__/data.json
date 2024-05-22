@@ -1,5 +1,6 @@
 {
   "readwiseToken": "savedReadwiseToken",
+  "syncOnStart": true,
   "indexPathTemplate": "savedIndexPathTemplate",
   "indexFileTemplate": "savedIndexFileTemplate",
   "highlightPathTemplate": "savedHighlightPathTemplate",

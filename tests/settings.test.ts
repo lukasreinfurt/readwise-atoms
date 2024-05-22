@@ -31,6 +31,7 @@ describe('Settings', () => {
 
     expect(loadDataSpy).toHaveBeenCalledOnce();
     expect(plugin.settings.readwiseToken).toEqual('');
+    expect(plugin.settings.syncOnStart).toEqual(false);
     expect(plugin.settings.indexPathTemplate).toEqual(indexPathTemplateDefault);
     expect(plugin.settings.indexFileTemplate).toEqual(indexFileTemplateDefault);
     expect(plugin.settings.highlightPathTemplate).toEqual(highlightPathTemplateDefault);
@@ -48,6 +49,7 @@ describe('Settings', () => {
 
     expect(loadDataSpy).toHaveBeenCalledTimes(2);
     expect(plugin.settings.readwiseToken).toEqual('savedReadwiseToken');
+    expect(plugin.settings.syncOnStart).toEqual(true);
     expect(plugin.settings.indexPathTemplate).toEqual('savedIndexPathTemplate');
     expect(plugin.settings.indexFileTemplate).toEqual('savedIndexFileTemplate');
     expect(plugin.settings.highlightPathTemplate).toEqual('savedHighlightPathTemplate');

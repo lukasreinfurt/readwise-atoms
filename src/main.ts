@@ -8,11 +8,11 @@ import Notifications from './features/notifications';
 
 export default class ReadwiseAtoms extends Plugin {
   settings: Settings;
-  templates: Templates;
+  templates = new Templates();
   readwise: Readwise;
   synchronize: Synchronize;
   notifications: Notifications;
-  commands: Commands;
+  commands = new Commands();
   isMobile: boolean;
 
   async onload() {
@@ -21,11 +21,8 @@ export default class ReadwiseAtoms extends Plugin {
     await this.loadSettings();
 
     this.notifications = new Notifications(this);
-    this.notifications.createStatusBarItem();
-    this.templates = new Templates();
     this.readwise = new Readwise(this);
     this.synchronize = new Synchronize(this);
-    this.commands = new Commands();
 
     this.addSettingTab(new SettingTab(this.app, this));
 
@@ -40,6 +37,10 @@ export default class ReadwiseAtoms extends Plugin {
       name: 'Resync',
       callback: async () => this.commands.resync(this),
     });
+
+    if (this.settings.syncOnStart) {
+      await this.commands.sync(this);
+    }
   }
 
   onunload() {}
