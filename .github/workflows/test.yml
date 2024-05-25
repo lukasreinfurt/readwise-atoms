@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-		name: Test
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
@@ -25,4 +25,4 @@ jobs:
 
       - name: Run tests
         run: |
-					npm run test
+          npm run test
