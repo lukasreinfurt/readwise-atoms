@@ -12,16 +12,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
+        uses: actions/setup-node@v4
 
       - name: Build plugin
         run: |
-          npm install
+          npm install --legacy-peer-deps
 
       - name: Run tests
         run: |
